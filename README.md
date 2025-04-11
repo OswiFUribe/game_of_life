@@ -12,4 +12,5 @@ Este proyecto es una implementación web del clásico autómata celular "[The Ga
 
 La estructura de documentos de este proyecto es la siguiente:
 
-- 
+- [Backend](backend/README.md)
+- [Frontend](frontend/README.md)
