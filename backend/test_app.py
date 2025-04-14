@@ -1,6 +1,6 @@
 # test_app.py
 from fastapi.testclient import TestClient
-from app import app, GRID_ROWS, GRID_COLS  # importa la aplicación y las constantes de configuración
+from app import app, GRID_ROWS, GRID_COLS, STEP_DELAY  # importa la aplicación y las constantes de configuración
 
 client = TestClient(app)
 
@@ -64,3 +64,63 @@ def test_reset_after_steps():
     # El estado tras reiniciar debería coincidir con el estado inicial definido (ej. el glider)
     assert initial_grid == new_initial_grid
 
+def test_custom_grid():
+    """Prueba que se pueda establecer una grilla personalizada."""
+    custom_grid = {
+        "grid": [
+            [1, 0, 1],
+            [0, 1, 0],
+            [1, 0, 1],
+        ]
+    }
+    response = client.post("/grid", json=custom_grid)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["grid"] == custom_grid["grid"]
+
+def test_reset_with_pattern():
+    """Prueba que al reiniciar se utiliza el patrón especificado (por ejemplo, 'blinker')."""
+    response = client.post("/reset", params={"pattern": "blinker"})
+    assert response.status_code == 200
+    data = response.json()
+    # Verifica que la grilla tenga la dimensión esperada y que el centro tenga el patrón blinker
+    assert len(data["grid"]) == GRID_ROWS
+    assert len(data["grid"][0]) == GRID_COLS
+    # Se puede verificar que, en el centro, hay 3 celdas en línea viva:
+    mid_row = GRID_ROWS // 2
+    mid_col = GRID_COLS // 2
+    assert data["grid"][mid_row][mid_col - 1] == 1
+    assert data["grid"][mid_row][mid_col] == 1
+    assert data["grid"][mid_row][mid_col + 1] == 1
+
+def test_step_and_back():
+    """Prueba avanzar un paso y luego retroceder la simulación."""
+    # Reiniciar para partir de un estado conocido
+    client.post("/reset", params={"pattern": "glider"})
+    response_initial = client.get("/grid")
+    initial_grid = response_initial.json()["grid"]
+    
+    # Avanzar un paso
+    response_step = client.post("/step")
+    stepped_grid = response_step.json()["grid"]
+    assert stepped_grid != initial_grid  # Se espera un cambio
+    
+    # Retroceder
+    response_back = client.post("/back")
+    back_grid = response_back.json()["grid"]
+    assert back_grid == initial_grid
+
+def test_start_and_pause():
+    """Verifica que se pueda iniciar y pausar la simulación automática."""
+    # Para probar esto de forma básica, iniciamos la simulación y esperamos un par de segundos,
+    # luego la pausamos y comprobamos que el estado cambia.
+    client.post("/reset", params={"pattern": "glider"})
+    response_start = client.post("/start")
+    started_grid = response_start.json()["grid"]
+    # Esperar un poco para que se avance automáticamente
+    import time
+    time.sleep(STEP_DELAY * 2)
+    response_pause = client.post("/pause")
+    paused_grid = response_pause.json()["grid"]
+    # Se espera que, al menos, el grid haya variado (pudiendo ser difícil de predecir en detalle)
+    assert paused_grid != started_grid
