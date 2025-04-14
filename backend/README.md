@@ -33,4 +33,12 @@ Para ejecutarlas:
 
 ```bash
 pytest
+```
 
+## Requerimientos
+
+Si se desea probar este proyecto por su cuenta, se recomienda crear un entorno virtual e instalar los requerimientos de `requeriments.txt`
+
+```bash
+pip install -r requirements.txt
+```
