@@ -51,24 +51,36 @@ def print_grid(grid):
         line = ''.join(['■' if cell else ' ' for cell in row])
         print(line)
 
-def create_initial_grid(rows, cols):
+def create_initial_grid(rows, cols, pattern="glider"):
     """
-    Crea un tablero vacío de tamaño rows x cols e inserta una configuración inicial (por ejemplo, un "glider").
-
+    Crea una grilla inicial de tamaño rows x cols según el patrón indicado.
+    
     Args:
-        rows (int): Número de filas.
-        cols (int): Número de columnas.
-
+        rows (int): número de filas.
+        cols (int): número de columnas.
+        pattern (str): Tipo de patrón ('glider', 'blinker', etc.)
+    
     Returns:
-        list[list[int]]: Tablero inicial.
+        list[list[int]]: Grilla inicial.
     """
     grid = [[0 for _ in range(cols)] for _ in range(rows)]
     
-    # Configuración de glider (puedes cambiar las coordenadas para otras formaciones)
-    glider = [(1, 2), (2, 3), (3, 1), (3, 2), (3, 3)]
-    for i, j in glider:
-        if i < rows and j < cols:  # Asegurarse que las coordenadas estén dentro del tablero
-            grid[i][j] = 1
+    if pattern == "glider":
+        # Patrón glider clásico
+        glider = [(1, 2), (2, 3), (3, 1), (3, 2), (3, 3)]
+        for i, j in glider:
+            if i < rows and j < cols:
+                grid[i][j] = 1
+    elif pattern == "blinker":
+        # Patrón blinker (oscilador de 3 celdas) centrado
+        mid_row = rows // 2
+        mid_col = cols // 2
+        grid[mid_row][mid_col - 1] = 1
+        grid[mid_row][mid_col]     = 1
+        grid[mid_row][mid_col + 1] = 1
+    
+    # Se pueden incluir más patrones según se requiera
+    
     return grid
 
 def main():
