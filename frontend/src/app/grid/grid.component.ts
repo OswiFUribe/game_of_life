@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { SimulationService, GridResponse } from '../simulation.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-grid',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './grid.component.html',
   styleUrls: ['./grid.component.css']
 })
