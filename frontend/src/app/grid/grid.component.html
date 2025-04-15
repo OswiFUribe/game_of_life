@@ -1,1 +1,19 @@
 <p>grid works!</p>
+<div class="grid-container">
+    <table>
+      <tbody>
+        <tr *ngFor="let row of grid">
+          <td *ngFor="let cell of row" [class.alive]="cell === 1"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="controls">
+    <button (click)="onReset()">Reset</button>
+    <button (click)="onStep()">Step</button>
+    <button (click)="onBack()">Back</button>
+    <button (click)="onStart()">Start</button>
+    <button (click)="onPause()">Pause</button>
+  </div>
+  
