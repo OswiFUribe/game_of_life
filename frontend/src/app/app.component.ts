@@ -4,7 +4,7 @@ import { GridComponent } from './grid/grid.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, GridComponent],
+  imports: [GridComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
