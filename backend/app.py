@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import threading
 import time
+from fastapi.middleware.cors import CORSMiddleware
 from simulation import create_initial_grid, get_next_state
 
 # Configuración del grid y tiempo de paso
@@ -29,6 +30,15 @@ class GridModel(BaseModel):
     grid: list[list[int]]
 
 app = FastAPI(title="Juego de la Vida API")
+
+# Configuración de CORS: permite peticiones de cualquier origen (puedes restringirlo a dominios específicos)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # o especifica [ "http://localhost:4200" ] si solo quieres permitir tu frontend
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/grid", response_model=GridModel)
 def get_grid():
