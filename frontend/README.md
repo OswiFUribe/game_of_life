@@ -1,59 +1,133 @@
-# GameOfLifeFrontend
+# Juego de la Vida - Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.7.
+Este proyecto es la interfaz web para la simulación del "Juego de la Vida" de John Conway. Construido con Angular, el frontend se comunica con un backend desarrollado en FastAPI para controlar la simulación, mostrando el estado (la grilla) y ofreciendo controles para avanzar, retroceder, iniciar y pausar la simulación, además de permitir la definición de patrones personalizados.
 
-## Development server
+## Tabla de Contenidos
+- [Juego de la Vida - Frontend](#juego-de-la-vida---frontend)
+  - [Tabla de Contenidos](#tabla-de-contenidos)
+  - [Descripción del Proyecto](#descripción-del-proyecto)
+  - [Características](#características)
+  - [Arquitectura y Estructura de Archivos](#arquitectura-y-estructura-de-archivos)
+  - [Instalación y Configuración](#instalación-y-configuración)
+    - [Requisitos Previos](#requisitos-previos)
+    - [Instalación de Dependencias](#instalación-de-dependencias)
+    - [Configuración del Backend](#configuración-del-backend)
+  - [Uso y Funcionalidades](#uso-y-funcionalidades)
+    - [Ejecución en Desarrollo](#ejecución-en-desarrollo)
+    - [Funcionalidades Clave](#funcionalidades-clave)
+  - [Pruebas](#pruebas)
 
-To start a local development server, run:
+## Descripción del Proyecto
+El frontend del "Juego de la Vida" permite a los usuarios visualizar la simulación y controlar su ejecución. Está diseñado para ofrecer una experiencia interactiva y sencilla. La comunicación se realiza a través de un servicio Angular (SimulationService) que conecta con el backend mediante peticiones HTTP.
 
-```bash
-ng serve
+## Características
+- **Visualización Dinámica de la Grilla:**
+  > Se muestra en una tabla HTML dónde cada celda representa una posición en la simulación (célula viva o muerta).
+
+- Controles de Simulación:
+
+- **Step:** Avanza la simulación un paso.
+
+- **Back:** Retrocede a un estado anterior, utilizando el historial de simulación.
+
+- **Start:** Inicia la ejecución automática (en el backend se lanza un hilo en segundo plano) y se activa el polling para actualizar la vista.
+
+- **Pause:** Detiene la ejecución automática.
+
+- **Reset:** Reinicia la simulación con un patrón predefinido o especificado (por ejemplo, "glider" o "blinker").
+
+- **Definición de Grilla Personalizada:** Permite que el usuario configure manualmente un patrón específico (enviando una matriz JSON al backend).
+
+## Arquitectura y Estructura de Archivos
+La estructura básica del proyecto generado por Angular es la siguiente:
+
+```ruby
+Copiar
+game-of-life-frontend/
+├── e2e/                     # Pruebas end-to-end
+├── node_modules/            # Dependencias NPM
+├── src/
+│   ├── app/
+│   │   ├── grid/            # Componente que muestra la grilla y controles
+│   │   │   ├── grid.component.ts
+│   │   │   ├── grid.component.html
+│   │   │   └── grid.component.css
+│   │   ├── simulation.service.ts   # Servicio para comunicarse con el backend
+│   │   ├── app.component.ts
+│   │   ├── app.component.html
+│   │   └── app.module.ts    (si usas NgModule) o configuración standalone en app.config.ts / main.ts
+│   ├── assets/              # Imágenes, fuentes, etc.
+│   ├── environments/        # Configuraciones de entorno (dev, prod)
+│   └── index.html
+├── angular.json             # Configuración del CLI de Angular
+├── package.json             # Dependencias y scripts de NPM
+├── tsconfig.json            # Configuración TypeScript
+└── README.md                # Este archivo de documentación
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+> [!Note] Nota:
+En proyectos con Angular 16 puedes optar por componentes standalone. En ese caso, la importación de proveedores (por ejemplo, HTTP) se hace directamente en los componentes o en un archivo de configuración (como app.config.ts) y se utiliza `bootstrapApplication` en main.ts.
 
-## Code scaffolding
+## Instalación y Configuración
+### Requisitos Previos
+- [Node.js](https://nodejs.org/) (recomendable la última versión LTS)
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+- [Angular CLI](https://angular.io/cli)  
+Instálalo globalmente si aún no lo tienes:
 
 ```bash
-ng generate --help
+npm install -g @angular/cli
 ```
 
-## Building
+### Instalación de Dependencias
+1. Abre una terminal en la carpeta raíz del proyecto (la misma carpeta donde se encuentra package.json).
 
-To build the project run:
+2. Ejecuta:
 
 ```bash
-ng build
+npm install
+```
+Esto instalará todas las dependencias necesarias para el proyecto.
+
+### Configuración del Backend
+
+El archivo `simulation.service.ts` tiene una variable `apiUrl` que por defecto apunta a http://localhost:8000.
+Asegúrate de que el backend (FastAPI) esté en ejecución y escuchando en ese puerto. Si lo ejecutas en otro puerto o dominio, actualiza la variable `apiUrl` en este archivo.
+
+## Uso y Funcionalidades
+### Ejecución en Desarrollo
+Para iniciar la aplicación en modo desarrollo:
+
+```bash
+ng serve --open
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Esto levantará el servidor de desarrollo y abrirá la aplicación en el navegador (por lo general, en http://localhost:4200).
 
-## Running unit tests
+### Funcionalidades Clave
+- **GridComponent**:
+  
+  Muestra la grilla mediante una tabla HTML. Las celdas vivas se distinguen mediante estilos (por ejemplo, fondo negro).
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+- **Controles (en GridComponent):**
+
+  - **Reset**: Reinicia la simulación con el patrón "glider" o el especificado.
+
+  - **Step**: Avanza un paso en la simulación. Si la simulación está en ejecución automática, se pausa antes de avanzar.
+
+  - **Back**: Retrocede al estado anterior. De igual forma, se pausa la ejecución automática si estaba activa.
+
+  - **Start**: Inicia la ejecución automática. Se activa un mecanismo de polling para actualizar la vista cada segundo.
+
+  - **Pause**: Detiene la actualización automática (polling).
+
+El `SimulationService` se encarga de hacer las peticiones HTTP a los endpoints del backend para cada acción, usando métodos como GET y POST.
+
+## Pruebas
+Se han preparado pruebas unitarias para asegurar el correcto funcionamiento de los componentes y del servicio.
+Para ejecutar las pruebas unitarias:
 
 ```bash
 ng test
 ```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Esto abrirá el entorno de pruebas (usualmente Karma con Jasmine) y mostrará el resultado de cada spec.
